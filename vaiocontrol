@@ -1,0 +1,45 @@
+#!/bin/bash
+export DISPLAY=:0
+
+if [ "$1" == "thermal" ]
+	then
+	
+	if [ "$2" = "silent" ] || [  "$2" = "balanced" ] || [ "$2" = "performance" ]
+  	then
+	  	echo $2 > /sys/devices/platform/sony-laptop/thermal_control
+	  	currentProfile=`cat /sys/devices/platform/sony-laptop/thermal_control`
+  		if [ "$currentProfile" == $2 ]
+    		then
+		
+  	  		echo "changed successfully to $2"
+			notify-send vaiocontrol "Thermal profile set to: $2" --urgency=critical
+  		else
+	    		echo "Are you root?"
+  		fi
+	exit
+	fi
+	echo "current thermal profile: $(cat /sys/devices/platform/sony-laptop/thermal_control)"
+exit
+fi
+
+if [ "$1" == "fan" ]
+then
+	if [ "$2" == "on" ]
+	then
+		echo 1 > /sys/devices/platform/sony-laptop/fan_forced
+		notify-send vaiocontrol "Fanspeed set to max"
+	exit
+	fi
+	if [ "$2" == "off" ]
+	then
+		echo "0" > /sys/devices/platform/sony-laptop/fan_forced
+		notify-send vaiocontrol "Fanspeed set to normal"
+	exit
+	fi
+
+echo $(cat /sys/devices/platform/sony-laptop/fanspeed) 
+
+exit
+fi
+
+echo "$1 is not an accepted argument!"
